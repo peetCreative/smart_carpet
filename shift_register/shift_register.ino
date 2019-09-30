@@ -6,12 +6,13 @@ int clockPin = 12;
 int dataPin = 11;
 
 int piezoSensor = A0;
-
+int state_motor = 0;
 int led_r = 1;
 int led_g = 2;
 int led_y = 4;
 int q3 = 8;
 int q4 = 16;
+int q5 = 32;
 
 
 bool clock = 0; 
@@ -25,7 +26,6 @@ void setup() {
 
   digitalWrite(clockPin, LOW);
   Serial.begin(9600);
- delay(50);
     // take the latchPin low so 
     // the LEDs don't change while you're sending in bits:
     digitalWrite(latchPin, LOW);
@@ -88,12 +88,12 @@ void shiftOutC(int myDataPin, int myClockPin, byte myDataOut) {
 
     //Sets the pin to HIGH or LOW depending on pinState
     digitalWrite(myDataPin, pinState);
-    delay(40);
+    delay(10);
     //register shifts bits on upstroke of clock pin  
     digitalWrite(myClockPin, !clock);
     //zero the data pin after shift to prevent bleed through
     digitalWrite(myDataPin, 0);
-    delay(40);
+    delay(10);
   }
 
   //stop shifting
@@ -110,16 +110,26 @@ void loop() {
 
     
     double sensor;
+    double button;
     digitalWrite(latchPin, LOW);
-    shiftOutC(dataPin, clockPin, q3 );    
+    shiftOutC(dataPin, clockPin, led_r | q3 | state_motor);    
     digitalWrite(latchPin, HIGH);
-    delay(50);
+    delay(10);
     sensor = analogRead(piezoSensor);
     Serial.println("links: " + String(sensor));
     digitalWrite(latchPin, LOW);
-    shiftOutC(dataPin, clockPin, q4 );    
+    shiftOutC(dataPin, clockPin, q4 | led_g | state_motor);    
     digitalWrite(latchPin, HIGH);
-    delay(50);
-    sensor = analogRead(piezoSensor);
-    Serial.println("rechts: " + String(sensor));
+    delay(20);
+    button = analogRead(piezoSensor);
+    Serial.println("rechts: " + String(button));
+    if(sensor > 500 || button > 500){
+      state_motor = q5 | led_y;
+    }
+    else {
+      state_motor = 0;
+    }
+    shiftOutC(dataPin, clockPin, state_motor);  
+    delay(20);
+
 }
