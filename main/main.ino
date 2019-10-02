@@ -81,7 +81,7 @@ void updateToActivateRegisters() {
   
     if (register_states[i] == 1) {
       activate_new = activate_new | register_to_activate[i];
-      // Serial.println("ACTIVATE NEW " + String(activate_new));
+      Serial.println("ACTIVATE NEW " + String(activate_new));
     }
   }
   activate = activate_new;
@@ -117,7 +117,7 @@ void loop() {
     register_states[state_led_g_right_index] = 0;
     register_states[state_motor_index] = 0;
   }
-  shiftOutC(dataPin, clockPin, activate);
+  shiftOutC(dataPin, clockPin, 0);
   delay(20);
   
   if (button_val) {
