@@ -1,4 +1,5 @@
 #include <SimpleTimer.h>
+
 /////////////////////////////////////////////////////////
 // pins
 // Pin connected to ST_CP of 74HC595
@@ -58,6 +59,7 @@ SimpleTimer timer;
 
 int activate; // the registers to be activated
 
+
 void setup() {
   // set pins to output so you can control the shift register
   pinMode(latchPin, OUTPUT);
@@ -65,13 +67,16 @@ void setup() {
   pinMode(dataPin, OUTPUT);
   Serial.begin(9600);
 
+  initDisplay();
+  displayText("Hello World");
   // initialize( measure & set) the idle values of the touch sensors
   setTouchInputIdleValues();
 }
 
+
 void loop() {
   timer.run();
-  
+
   if (VIBRATION_ACTIVE == false) {
     register_states[state_motor_index] = 0;
   }
@@ -110,26 +115,3 @@ void loop() {
     //delay(20);
   }
 }
-
-/*
-void addToBuffer(int digit){
-  // clear buffer
-  memset(dataBuffer, 0, sizeof(dataBuffer));
- 
-  for (int c = 0; c < sizeof(dataBuffer); c++) {
-    dataBuffer[c] = state
-  }
-  
-  writeBuffer();
-}
-
-void writeBuffer(){
-  digitalWrite(latchPin, 0);
-  
-  for (int a = sizeof(dataBuffer) - 1; a >= 0  ; a--) {
-    shiftOut(dataPin, clockPin, dataBuffer[a]);
-  }
-  
-  digitalWrite(latchPin, 1);
-}
-*/
