@@ -1,3 +1,7 @@
+// default idle values (calibrated by hand)
+double touch_val_left_idle = 0;
+double touch_val_right_idle = 0;
+
 void setTouchInputIdleValues() {
   delay(100);
   // get the lower bounds of the idle states (no touch applied)
