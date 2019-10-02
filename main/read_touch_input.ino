@@ -13,9 +13,9 @@ double analogReadTouch(int touch_pin) {
    // read touch input values 
     int led;
     if (touch_pin == touch_left) {
-      led = led_r;
+      led = led_g_left;
     } else if (touch_pin == touch_right) {
-      led = led_g;
+      led = led_g_right;
     }
     
     digitalWrite(latchPin, LOW);

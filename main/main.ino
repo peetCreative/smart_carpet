@@ -9,16 +9,19 @@ int clockPin = 12;
 int dataPin = 11;
 
 // shift register outputs 
-int led_r = 1;
-int led_g = 2;
-int led_y = 4;
-int touch_right = 8; // piezo sensor right
-int button = 16;
-int vibration_motor = 32;
-int touch_left = 64; // piezo sensor left
+int led_g_left = 1; // q0
+int led_y_left = 2; // q1
+int led_g_right = 4; // q2
+int led_y_right = 8; // q3
+int button = 16; // q4 
+int touch_left = 32; // q5 piezo sensor left
+int touch_right = 64; // q6 piezo sensor right
+
+int vibration_motor = 128; // q7
+
 int analog_input_0 = A0;
 
-// other
+// input values
 double touch_val_left;
 double touch_val_right;
 // default idle values (calibrated by hand)
@@ -27,9 +30,24 @@ double touch_val_right_idle = 0;
 
 bool button_val;
 
-int state_motor = 0;
-bool vibration_active = false;
+// shift register outputs states
 
+// to shift out all needed registers
+const int NUM_STATES = 5;
+int active_registers[NUM_STATES] = {vibration_motor, led_g_left, led_y_left, led_g_right, led_y_right};
+
+// to hold track of what needs to be updated
+typedef struct {
+  int state_motor = 0;
+  int state_led_g_left = 0;
+  int state_led_y_left = 0;
+  int state_led_g_right = 0;
+  int state_led_y_right = 0;
+} state;
+
+//state states[NUM_STATES] = {state_motor, state_led_g_left, state_led_y_left, state_led_g_right, state_led_y_right};
+
+const bool VIBRATION_ACTIVE = true;
 // timer object
 SimpleTimer timer;
 
@@ -45,9 +63,9 @@ void setup() {
 }
 
 void loop() {
-  time.run();
+  timer.run();
   
-  if (vibration_active == false) {
+  if (VIBRATION_ACTIVE == false) {
     state_motor = 0;
   }
   // TODO map values
@@ -62,7 +80,7 @@ void loop() {
   Serial.println("BUTTON: " + String(button_val));
 
   /*
-  if (vibration_active && (touch_val_left > 800 || touch_val_right > 800 || button_val)){
+  if (VIBRATION_ACTIVE && (touch_val_left > 800 || touch_val_right > 800 || button_val)){
     state_motor = vibration_motor;
   }
   else {
@@ -72,7 +90,30 @@ void loop() {
   delay(20);
   */
   if (button_val) {
-    int timeout = 5000;
+    int timeout = 0;
     int timer_vibrate = timer.setTimeout(timeout, vibrateOnceFor);
   }
 }
+
+/*
+void addToBuffer(int digit){
+  // clear buffer
+  memset(dataBuffer, 0, sizeof(dataBuffer));
+ 
+  for (int c = 0; c < sizeof(dataBuffer); c++) {
+    dataBuffer[c] = state
+  }
+  
+  writeBuffer();
+}
+
+void writeBuffer(){
+  digitalWrite(latchPin, 0);
+  
+  for (int a = sizeof(dataBuffer) - 1; a >= 0  ; a--) {
+    shiftOut(dataPin, clockPin, dataBuffer[a]);
+  }
+  
+  digitalWrite(latchPin, 1);
+}
+*/
