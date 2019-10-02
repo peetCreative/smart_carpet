@@ -1,7 +1,7 @@
 bool readButton(int button_pin) {
   // read the button over the analog input
   digitalWrite(latchPin, LOW);
-  shiftOutC(dataPin, clockPin, button_pin | led_g | state_motor);    
+  shiftOutC(dataPin, clockPin, button_pin | led_g );//| state_motor);    
   digitalWrite(latchPin, HIGH);
   delay(20);
   double button_val = analogRead(analog_input_0);

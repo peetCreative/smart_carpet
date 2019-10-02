@@ -1,3 +1,14 @@
+void setTouchInputIdleValues() {
+  delay(100);
+  // get the lower bounds of the idle states (no touch applied)
+  touch_val_right_idle = analogReadTouch(touch_right);
+  Serial.println("-----------------SET TOUCH INPUT IDLE VALUES-----------------");
+  Serial.println("TOUCH RIGHT IDLE: " + String(touch_val_right_idle));
+  touch_val_left_idle = analogReadTouch(touch_left);
+  Serial.println("TOUCH LEFT IDLE: " + String(touch_val_left_idle));
+  Serial.println("-------------------------------------------------------------");
+}
+
 double analogReadTouch(int touch_pin) {
    // read touch input values 
     int led;
@@ -8,7 +19,7 @@ double analogReadTouch(int touch_pin) {
     }
     
     digitalWrite(latchPin, LOW);
-    shiftOutC(dataPin, clockPin, led | touch_pin | state_motor);    
+    shiftOutC(dataPin, clockPin, led | touch_pin); //| state_motor);    
     digitalWrite(latchPin, HIGH);
     delay(20); // for shiftOut to shift
     

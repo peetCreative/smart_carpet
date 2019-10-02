@@ -1,3 +1,5 @@
+#include <SimpleTimer.h>
+
 // pins
 // Pin connected to ST_CP of 74HC595
 int latchPin = 8;
@@ -6,12 +8,13 @@ int clockPin = 12;
 // Pin connected to DS of 74HC595
 int dataPin = 11;
 
+// shift register outputs 
 int led_r = 1;
 int led_g = 2;
 int led_y = 4;
 int touch_right = 8; // piezo sensor right
 int button = 16;
-int q5 = 32;
+int vibration_motor = 32;
 int touch_left = 64; // piezo sensor left
 int analog_input_0 = A0;
 
@@ -25,7 +28,10 @@ double touch_val_right_idle = 0;
 bool button_val;
 
 int state_motor = 0;
-bool vibration_on = false;
+bool vibration_active = false;
+
+// timer object
+SimpleTimer timer;
 
 void setup() {
   // set pins to output so you can control the shift register
@@ -34,24 +40,14 @@ void setup() {
   pinMode(dataPin, OUTPUT);
   Serial.begin(9600);
 
-  // measure & set the idle values of the touch sensors
+  // initialize( measure & set) the idle values of the touch sensors
   setTouchInputIdleValues();
 }
 
-
-void setTouchInputIdleValues() {
-  delay(100);
-  // get the lower bounds of the idle states (no touch applied)
-  touch_val_right_idle = analogReadTouch(touch_right);
-  Serial.println("-----------------SET TOUCH INPUT IDLE VALUES-----------------");
-  Serial.println("TOUCH RIGHT IDLE: " + String(touch_val_right_idle));
-  touch_val_left_idle = analogReadTouch(touch_left);
-  Serial.println("TOUCH LEFT IDLE: " + String(touch_val_left_idle));
-  Serial.println("-------------------------------------------------------------");
-}
-
 void loop() {
-  if (vibration_on == false) {
+  time.run();
+  
+  if (vibration_active == false) {
     state_motor = 0;
   }
   // TODO map values
@@ -64,17 +60,19 @@ void loop() {
   // button read
   button_val = readButton(button);
   Serial.println("BUTTON: " + String(button_val));
-  if (vibration_on && (touch_val_left > 800 || touch_val_right > 800 || button_val)){
-    state_motor = q5 | led_y;
+
+  /*
+  if (vibration_active && (touch_val_left > 800 || touch_val_right > 800 || button_val)){
+    state_motor = vibration_motor;
   }
   else {
     state_motor = 0;
   }
   shiftOutC(dataPin, clockPin, state_motor);
   delay(20);
-}
-
-void restart() {
-  // reload the main program (e.g. reset)
-  // TODO
+  */
+  if (button_val) {
+    int timeout = 5000;
+    int timer_vibrate = timer.setTimeout(timeout, vibrateOnceFor);
+  }
 }
