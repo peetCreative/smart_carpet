@@ -5,26 +5,27 @@ int state_main_menu = 0;
 int back_prev_state = 0;
 
 double zero_threshold = 20;
-double prev_state_left = 0;
-double prev_state_right = 0;
+double state_left = 0;
+double state_right = 0;
 int left_down = 0;
 int right_down = 0;
 int left_up = 0;
 int right_up = 0;
 
-#define MAIN_MENU_TIMER = 0;
-#define MAIN_MENU_STOP_WATCH = 1;
-#define MAIN_MENU_ITMES = 2;
+#define MAIN_MENU_TIMER 0
+#define MAIN_MENU_STOP_WATCH 1
+#define MAIN_MENU_ITEMS 2
 
-#define STATE_TIMER_START 0;
-#define STATE_TIMER_INCREMENT_TIME 1;
-#define STATE_TIMER_RESET 2;
-#define STATE_TIMER_READY 3;
-#define STATE_TIMER_RUNNING 4;
-#define STATE_TIMER_RUNNING_START 5;
-#define STATE_TIMER_RING 6;
-#define STATE_TIMER_STOP 7;
-#define STATE_TIMER_BACK_MM 8;
+#define STATE_TIMER_START 0
+#define STATE_TIMER_INCREMENT_TIME 1
+#define STATE_TIMER_RESET 2
+#define STATE_TIMER_READY 3
+#define STATE_TIMER_RUNNING 4
+#define STATE_TIMER_RUNNING_START 5
+#define STATE_TIMER_RING 6
+#define STATE_TIMER_STOP 7
+#define STATE_TIMER_BACK_MM 8
+#define STATE_TIMER_BACK_MMW 9
 int state_timer = STATE_TIMER_START;
 int timer_t = 0;
 
@@ -33,8 +34,8 @@ void process() {
   right_down = touch_val_right > zero_threshold && state_right < zero_threshold;
   left_up = touch_val_left < zero_threshold && state_left > zero_threshold;
   right_up = touch_val_right < zero_threshold && state_right > zero_threshold;
-  prev_state_left = touch_val_left;
-  prev_state_right = touch_val_right;
+  state_left = touch_val_left;
+  state_right = touch_val_right;
 
   register_states[state_motor_index] = left_down || right_down;
 
@@ -49,7 +50,7 @@ void process() {
     }
     if (left_down) {
       // we don't have more functionallity than
-      state_main_menu = (state_main_menu + 1) % MENU_ITEMS;
+      state_main_menu = (state_main_menu + 1) % MAIN_MENU_ITEMS;
     }
     
   }
@@ -75,7 +76,7 @@ void process_timer() {
       if (left_down) {
         timer_t = 0;
         process_timer_increment();
-        state_timer = STATE_TIMER_INCREMENT;
+        state_timer = STATE_TIMER_INCREMENT_TIME;
       }
       break;
     case STATE_TIMER_INCREMENT_TIME:
@@ -83,7 +84,7 @@ void process_timer() {
         state_timer = STATE_TIMER_READY;
       }
       else {
-        process_timer_incremement();
+        process_timer_increment();
       }
       if (right_down) {
         state_timer = STATE_TIMER_RESET;
@@ -102,24 +103,27 @@ void process_timer() {
         process_timer_increment();
       }
       if (right_down) {
-        STATE_TIMER_BACK_MM
+        state_timer = STATE_TIMER_BACK_MM;
         back_prev_state = STATE_TIMER_RUNNING_START;
       }
+      break;
     case STATE_TIMER_RUNNING_START:
       //TODO: look for simple timer
-      timer = 
+      //timer = 
       state_timer = STATE_TIMER_RUNNING;
+      break;
     case STATE_TIMER_RUNNING:
       if (right_down) {
         //TODO: stop the timer
         back_prev_state = STATE_TIMER_STOP;
         state_timer = STATE_TIMER_BACK_MM;
       }
-      //TIMER abgelaufen
-      if (timer) {
-        state_timer = STATE_TIMER_RING;
-        register_states[state_motor_index] = 1;
-      }
+      //TODO: TIMER abgelaufen
+      //if (timer) {
+      //  state_timer = STATE_TIMER_RING;
+      //  register_states[state_motor_index] = 1;
+      //}
+      break;
     case STATE_TIMER_RING:
       if (right_down) {
         register_states[state_motor_index] = 0;    
@@ -128,9 +132,10 @@ void process_timer() {
       }
       if (left_down) {
         register_states[state_motor_index] = 0;    
-        state_timer = STATE_TIMER_INCREMENT;
+        state_timer = STATE_TIMER_INCREMENT_TIME;
         
       }
+      break;
     case STATE_TIMER_STOP:
       if (right_down) {
         back_prev_state = STATE_TIMER_RUNNING;
@@ -138,7 +143,7 @@ void process_timer() {
       }
       if (left_down) {
         process_timer_increment();
-        state_timer = STATE_TIMER_INCREMENT;
+        state_timer = STATE_TIMER_INCREMENT_TIME;
       }
       break;
     case STATE_TIMER_BACK_MM:
@@ -150,8 +155,9 @@ void process_timer() {
       if (left_down) {
         timer_t = 0;
         process_timer_increment();
-        state_timer = STATE_TIMER_INCREMENT;
+        state_timer = STATE_TIMER_INCREMENT_TIME;
       }
+      break;
     case STATE_TIMER_BACK_MMW:
       // just wait that left and right is up and go back to main menu
       if (touch_val_left < zero_threshold && 
@@ -169,8 +175,8 @@ void process_stop_watch() {
 }
 
 
-void process_timer_increment {
+void process_timer_increment() {
   //possibly make logarthmic scale
   //just implement this by hand don't overingeneer!
-  timer_t += map(timer_val_left, 0, 800, 5, 60);
+  timer_t += map(touch_val_left, 0, 800, 5, 60);
 }
