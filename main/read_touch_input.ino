@@ -1,3 +1,7 @@
+// default idle values (calibrated by hand)
+double touch_val_left_idle = 0;
+double touch_val_right_idle = 0;
+
 void setTouchInputIdleValues() {
   delay(100);
   // get the lower bounds of the idle states (no touch applied)
@@ -21,7 +25,7 @@ double analogReadTouch(int touch_pin) {
     digitalWrite(latchPin, LOW);
     shiftOutC(dataPin, clockPin, touch_pin); //| state_motor);    
     digitalWrite(latchPin, HIGH);
-    delay(20); // for shiftOut to shift
+    delay(10); // for shiftOut to shift
     
     double touch_val = analogRead(analog_input_0);
 
