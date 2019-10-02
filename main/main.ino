@@ -56,6 +56,8 @@ const bool VIBRATION_ACTIVE = true;
 
 // timer object
 SimpleTimer timer;
+int timer_io_menu;
+int timer_display;
 
 int activate; // the registers to be activated
 
@@ -71,16 +73,21 @@ void setup() {
   displayText("Hello World");
   // initialize( measure & set) the idle values of the touch sensors
   setTouchInputIdleValues();
+  timer_io_menu = timer.setInterval(20, update_io_menu);
+  timer_display = timer.setInterval(200, update_display);
+  
 }
 
 
 void loop() {
   timer.run();
+}
 
+void update_io_menu () {
   if (VIBRATION_ACTIVE == false) {
     register_states[state_motor_index] = 0;
   }
-  
+
   // touch read
   touch_val_right = analogReadTouchAndMap(touch_right);
   Serial.println("MAPPED TOUCH RIGHT: " + String(touch_val_right));
@@ -91,27 +98,58 @@ void loop() {
   button_val = readButton(button);
   Serial.println("BUTTON: " + String(button_val));
 
-  if (VIBRATION_ACTIVE && (touch_val_left > 800 || touch_val_right > 800)){
-    register_states[state_led_g_left_index] = 1;
-    register_states[state_led_g_right_index] = 1;
-    register_states[state_motor_index] = 1;
-  }
-  else {
-    register_states[state_led_g_left_index] = 0;
-    register_states[state_led_g_right_index] = 0;
-    register_states[state_motor_index] = 0;
-  }
-  
+  process();
+
   shiftOutC(dataPin, clockPin, 0);
-  //delay(20);
-  
-  if (button_val) {
-    //int timeout = 0;
-    //int timer_vibrate = timer.setTimeout(timeout, vibrateOnceFor);
-    register_states[state_led_y_left_index] = 1;
-    register_states[state_led_y_right_index] = 1;
-    register_states[state_motor_index] = 0;
-    shiftOutC(dataPin, clockPin, 0); 
-    //delay(20);
-  }
 }
+
+void update_display () {
+  
+}
+
+//  if (VIBRATION_ACTIVE && (touch_val_left > 800 || touch_val_right > 800)){
+//    register_states[state_led_g_left_index] = 1;
+//    register_states[state_led_g_right_index] = 1;
+//    register_states[state_motor_index] = 1;
+//  }
+//  else {
+//    register_states[state_led_g_left_index] = 0;
+//    register_states[state_led_g_right_index] = 0;
+//    register_states[state_motor_index] = 0;
+//  }
+//  
+//  //delay(20);
+//  
+//  if (button_val) {
+//    //int timeout = 0;
+//    //int timer_vibrate = timer.setTimeout(timeout, vibrateOnceFor);
+//    register_states[state_led_y_left_index] = 1;
+//    register_states[state_led_y_right_index] = 1;
+//    register_states[state_motor_index] = 0;
+//    shiftOutC(dataPin, clockPin, 0); 
+//    //delay(20);
+//  }
+//}
+
+/*
+void addToBuffer(int digit){
+  // clear buffer
+  memset(dataBuffer, 0, sizeof(dataBuffer));
+ 
+  for (int c = 0; c < sizeof(dataBuffer); c++) {
+    dataBuffer[c] = state
+  }
+  
+  writeBuffer();
+}
+
+void writeBuffer(){
+  digitalWrite(latchPin, 0);
+  
+  for (int a = sizeof(dataBuffer) - 1; a >= 0  ; a--) {
+    shiftOut(dataPin, clockPin, dataBuffer[a]);
+  }
+  
+  digitalWrite(latchPin, 1);
+}
+*/
