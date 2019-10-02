@@ -56,7 +56,7 @@ int register_states[NUM_STATES] = {state_motor, state_led_g_left, state_led_y_le
 //////////////////////////////////////////////////////////////////////////////
 
 
-const bool VIBRATION_ACTIVE = false;
+const bool VIBRATION_ACTIVE = true;
 // timer object
 SimpleTimer timer;
 
@@ -74,14 +74,13 @@ void setup() {
 int activate; // the registers to be activated
 void updateToActivateRegisters() {
   
-  int activate_new;
+  int activate_new = 0;
   for (int i = 0; i < NUM_STATES; i++) {
 
     Serial.println("Register " + String(register_to_activate[i]) + "\tRegister Status " + String(register_states[i]));
   
     if (register_states[i] == 1) {
       activate_new = activate_new | register_to_activate[i];
-      Serial.println("ACTIVATE NEW " + String(activate_new));
     }
   }
   activate = activate_new;
@@ -118,7 +117,7 @@ void loop() {
     register_states[state_motor_index] = 0;
   }
   shiftOutC(dataPin, clockPin, 0);
-  delay(20);
+  //delay(20);
   
   if (button_val) {
     //int timeout = 0;
@@ -127,7 +126,7 @@ void loop() {
     register_states[state_led_y_right_index] = 1;
     register_states[state_motor_index] = 0;
     shiftOutC(dataPin, clockPin, 0); 
-    delay(20);
+    //delay(20);
   }
 }
 

@@ -3,7 +3,7 @@ bool readButton(int button_pin) {
   digitalWrite(latchPin, LOW);
   shiftOutC(dataPin, clockPin, button_pin);//| state_motor);    
   digitalWrite(latchPin, HIGH);
-  delay(20);
+  delay(10);
   double button_val = analogRead(analog_input_0);
   // Serial.println("BUTTON ANALOG VALUE: " + String(button_val));
   if (button_val > 500) {

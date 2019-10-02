@@ -21,7 +21,7 @@ double analogReadTouch(int touch_pin) {
     digitalWrite(latchPin, LOW);
     shiftOutC(dataPin, clockPin, touch_pin); //| state_motor);    
     digitalWrite(latchPin, HIGH);
-    delay(20); // for shiftOut to shift
+    delay(10); // for shiftOut to shift
     
     double touch_val = analogRead(analog_input_0);
 
