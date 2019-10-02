@@ -1,6 +1,10 @@
 bool clock = 0; 
 
 void shiftOutC(int myDataPin, int myClockPin, byte myDataOut) {
+  updateToActivateRegisters();
+  myDataOut = myDataOut | activate;
+
+  
   // This shifts 8 bits out MSB first,
   //on the rising edge of the clock,
   //clock idles low

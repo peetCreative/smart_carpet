@@ -18,14 +18,11 @@ void vibrate() {
     return;
   }
 
-  state.state_motor = 1;
-  state.state_led_y_left = 1;
-  state.state_led_y_right = 1;
-  for (int i = 0; i < NUM_STATES; i++) {
-    if (states[i] == 1) {
-      activate_registers = activate_registers | active_registers[i];
-    }
-  }
-  shiftOutC(dataPin, clockPin, active_registers);
+ 
+  register_states[state_motor_index] = 1;
+  register_states[state_led_y_left_index] = 1;
+  register_states[state_led_y_right_index] = 1;
+  
+  shiftOutC(dataPin, clockPin, activate);
   //delay(20);
 }
