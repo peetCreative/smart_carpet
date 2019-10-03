@@ -38,12 +38,12 @@ void shiftOutC(int myDataPin, int myClockPin, byte myDataOut) {
 
     //Sets the pin to HIGH or LOW depending on pinState
     digitalWrite(myDataPin, pinState);
-    delay(10);
+    delay(1);
     //register shifts bits on upstroke of clock pin  
     digitalWrite(myClockPin, !clock);
     //zero the data pin after shift to prevent bleed through
     digitalWrite(myDataPin, 0);
-    delay(10);
+    delay(1);
   }
 
   //stop shifting

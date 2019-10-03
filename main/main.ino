@@ -48,6 +48,8 @@ int register_states[NUM_STATES] = {state_motor, state_led_g_left, state_led_y_le
 //////////////////////////////////////////////////////////////////////////////
 
 // input values
+const double threshold_low = 200;
+const double threshold_high = 800;
 double touch_val_left;
 double touch_val_right;
 bool button_val;
@@ -61,6 +63,8 @@ int timer_display;
 
 int activate; // the registers to be activated
 
+const int display_update_t = 50;
+const int io_menu_update_t = 20;
 
 void setup() {
   // set pins to output so you can control the shift register
@@ -70,23 +74,20 @@ void setup() {
   Serial.begin(9600);
 
   initDisplay();
-  displayText("Hello World");
   // initialize( measure & set) the idle values of the touch sensors
   setTouchInputIdleValues();
-  timer_io_menu = timer.setInterval(20, update_io_menu);
-  timer_display = timer.setInterval(200, update_display);
-  
+  timer_io_menu = timer.setInterval(io_menu_update_t, update_io_menu);
+  timer_display = timer.setInterval(display_update_t, update_display);
 }
-
 
 void loop() {
   timer.run();
 }
 
 void update_io_menu () {
-  if (VIBRATION_ACTIVE == false) {
-    register_states[state_motor_index] = 0;
-  }
+//  if (VIBRATION_ACTIVE == false) {
+//    register_states[state_motor_index] = 0;
+//  }
 
   // touch read
   touch_val_right = analogReadTouchAndMap(touch_right);
@@ -97,25 +98,32 @@ void update_io_menu () {
   // button read
   button_val = readButton(button);
   Serial.println("BUTTON: " + String(button_val));
+  if (button_val) {
+    setTouchInputIdleValues();
+  }
+
+  register_states[state_led_y_left_index] =
+    (touch_val_left > threshold_low &&  touch_val_left < threshold_high) || button_val;
+  register_states[state_led_y_right_index] =
+    (touch_val_right > threshold_low &&  touch_val_right < threshold_high) || button_val;
+  register_states[state_led_g_left_index] =
+    (touch_val_left > threshold_high) || button_val;
+  register_states[state_led_g_right_index] =
+    (touch_val_right > threshold_high) || button_val;
 
   process();
 
   shiftOutC(dataPin, clockPin, 0);
 }
 
-void update_display () {
-  
-}
 
 //  if (VIBRATION_ACTIVE && (touch_val_left > 800 || touch_val_right > 800)){
 //    register_states[state_led_g_left_index] = 1;
 //    register_states[state_led_g_right_index] = 1;
-//    register_states[state_motor_index] = 1;
 //  }
 //  else {
 //    register_states[state_led_g_left_index] = 0;
 //    register_states[state_led_g_right_index] = 0;
-//    register_states[state_motor_index] = 0;
 //  }
 //  
 //  //delay(20);
